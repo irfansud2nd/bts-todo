@@ -12,6 +12,7 @@ import { Input } from "./ui/input";
 import { Checkbox } from "./ui/checkbox";
 import { reduceData } from "@/lib/functions";
 import EditItemDialog from "./EditItemDialog";
+import { addItem, checkItem, deleteItem } from "@/lib/action";
 
 const ListDialog = ({
   checklist,
@@ -23,26 +24,13 @@ const ListDialog = ({
   const [itemName, setItemName] = useState("");
   const [items, setItems] = useState<Todo[]>(checklist.items);
 
-  const token = sessionStorage.getItem("token");
-
   const handleClick = async () => {
     try {
       if (!itemName) throw new Error("Tolong lengkapi");
-      const response = await fetch(
-        `${baseUrl}/checklist/${checklist.id}/item`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ itemName }),
-        }
-      );
 
-      const result = await response.json();
+      const result = await addItem(itemName, checklist.id);
 
-      const newItems = [...items, result.data];
+      const newItems = [...items, result];
 
       setItems(newItems);
       setChecklists(
@@ -63,12 +51,7 @@ const ListDialog = ({
 
   const handleDelete = async (id: number) => {
     try {
-      await fetch(`${baseUrl}/checklist/${checklist.id}/item/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await deleteItem(id, checklist.id);
 
       const newItems = items.filter((item) => item.id != id);
 
@@ -90,19 +73,9 @@ const ListDialog = ({
 
   const handleCheck = async (id: number) => {
     try {
-      const response = await fetch(
-        `${baseUrl}/checklist/${checklist.id}/item/${id}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const result = await checkItem(id, checklist.id);
 
-      const result = await response.json();
-
-      const newItems = reduceData([...items, result.data]) as Todo[];
+      const newItems = reduceData([...items, result]) as Todo[];
 
       setItems(newItems);
       setChecklists(

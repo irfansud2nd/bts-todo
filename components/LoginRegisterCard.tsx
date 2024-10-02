@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { baseUrl } from "@/lib/constants";
+import { loginAndRegister } from "@/lib/action";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -28,40 +28,9 @@ const LoginRegisterCard = ({ register }: Props) => {
 
   const handleSubmit = async () => {
     try {
-      if (!username || !password) {
-        throw new Error("Tolong lengkapi data yang diperlukan");
-      }
-
-      let url = "login";
-
-      let body: Record<string, string> = {
-        username,
-        password,
-      };
-
-      if (register) {
-        if (!email) throw new Error("Tolong lengkapi data yang diperlukan");
-
-        url = "register";
-        body.email = email;
-      }
-
-      const response = await fetch(`${baseUrl}/${url}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-
-      const result = await response.json();
-      console.log(result);
-
-      sessionStorage.setItem("token", result.data.token);
-
-      console.log("gas");
+      await loginAndRegister(username, password, email, register);
 
       router.push("/");
-
-      //   console.log(result);
     } catch (error) {
       alert(error);
     }

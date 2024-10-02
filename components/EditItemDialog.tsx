@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import { useState } from "react";
 import { Input } from "./ui/input";
 import { reduceData } from "@/lib/functions";
+import { updateItem } from "@/lib/action";
 
 const EditItemDialog = ({
   item,
@@ -14,31 +15,16 @@ const EditItemDialog = ({
   checklistId: number;
   setItems: React.Dispatch<React.SetStateAction<Todo[]>>;
 }) => {
-  const token = sessionStorage.getItem("token");
-
   const [itemName, setItemName] = useState(item.name);
   const [open, setOpen] = useState(false);
 
   const handleClick = async () => {
     try {
       if (!itemName) throw new Error("Tolong lengkapi");
-      const response = await fetch(
-        `${baseUrl}/checklist/${checklistId}/item/rename/${item.id}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ itemName }),
-        }
-      );
 
-      const result = await response.json();
+      const result = await updateItem(itemName, item.id, checklistId);
 
-      console.log(result);
-
-      setItems((prev) => reduceData([...prev, result.data]) as Todo[]);
+      setItems((prev) => reduceData([...prev, result]) as Todo[]);
       setOpen(false);
       setItemName("");
     } catch (error) {

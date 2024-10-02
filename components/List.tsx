@@ -10,6 +10,7 @@ import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import ListDialog from "./ListDialog";
 import { Checkbox } from "./ui/checkbox";
+import { deleteChecklist } from "@/lib/action";
 
 const List = ({
   checklist,
@@ -18,20 +19,13 @@ const List = ({
   checklist: Checklist;
   setChecklists: React.Dispatch<React.SetStateAction<Checklist[]>>;
 }) => {
-  const token = sessionStorage.getItem("token");
-
   const deleteList = async () => {
     try {
       const isConfirmed = confirm("Apakah anda yakin?");
 
       if (!isConfirmed) return;
 
-      await fetch(`${baseUrl}/checklist/${checklist.id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await deleteChecklist(checklist.id);
 
       setChecklists((prev) => prev.filter((item) => item.id != checklist.id));
     } catch (error) {

@@ -1,20 +1,18 @@
-"use client";
+"use server";
 
-import { usePathname, useRouter } from "next/navigation";
+import { getToken } from "@/lib/action";
+import { redirect } from "next/navigation";
 
 type Props = {
   children: React.ReactNode;
 };
 
-const IsLoggedIn = ({ children }: Props) => {
-  const token = sessionStorage.getItem("token");
-  const pathname = usePathname();
-  const splittedPathname = pathname.split("/");
-  const lastPathname = splittedPathname[splittedPathname.length - 1];
-  const router = useRouter();
+const IsLoggedIn = async ({ children }: Props) => {
+  const token = await getToken();
 
-  if (lastPathname != "login" && lastPathname != "register" && !token)
-    router.push("/login");
+  console.log({ token });
+
+  if (!token) redirect("/login");
 
   return <>{children}</>;
 };

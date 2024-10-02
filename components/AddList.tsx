@@ -5,6 +5,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Checklist, Todo, baseUrl } from "@/lib/constants";
 import { useRouter } from "next/navigation";
+import { createChecklist } from "@/lib/action";
 
 const AddList = ({
   setChecklists,
@@ -12,23 +13,12 @@ const AddList = ({
   setChecklists: React.Dispatch<React.SetStateAction<Checklist[]>>;
 }) => {
   const [listName, setListName] = useState("");
-  const token = sessionStorage.getItem("token");
-  const router = useRouter();
 
   const handleClick = async () => {
     try {
-      const response = await fetch(`${baseUrl}/checklist`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name: listName }),
-      });
+      const result = await createChecklist(listName);
 
-      const result = await response.json();
-
-      setChecklists((prev) => [...prev, result.data]);
+      setChecklists((prev) => [...prev, result]);
     } catch (error) {
       alert(error);
     }
