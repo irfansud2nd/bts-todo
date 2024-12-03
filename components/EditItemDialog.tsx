@@ -25,8 +25,6 @@ const EditItemDialog = ({
 
       const result = await updateItem(itemName, item.id, checklistId);
 
-      // setItems((prev) => reduceData([...prev, result]) as Item[]);
-
       dispatch(updateItemRedux({ item: result, checklistId: checklistId }));
       setOpen(false);
       setItemName("");
